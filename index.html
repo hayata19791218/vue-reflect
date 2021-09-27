@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+        <title>Vueで作った反射神経ゲーム</title>
+    </head>
+    <body>
+        
+    <div id="app">   
+        <div v-if="flag">
+            <p v-if="explain">反射神経ゲームです<br>スタートボタンを押すとゲームが始まります。<br>赤のマル以外のマルをクリックすると10秒タイムが加算されます。<br>正しいマルを10回押したらゲーム終了です。</p>
+            <span v-for="buttonNumber in 25">
+                <button 
+                    :class="
+                        buttonClass(buttonNumber)
+                    "
+                    :class="
+     
+                        nisebuttonClass(buttonNumber)
+                    "
+                    @click="answer(buttonNumber)"
+                ></button>
+                <br v-if="buttonNumber % 5 == 0">
+            </span>
+            <h4>{{secondsInHMS}} 秒</h4>
+            <button 
+                class="btn btn-lg btn-dark"
+                @click="start()"
+            >スタート</button>
+        </div>
+        <div v-else>
+            終了です！タイムは{{secondsInHMS}}でした！
+        </div>
+    </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data:{
+                   seconds:0,
+                   timer:null,
+                   count:0,
+                   currentCircleNumber:0,
+                   currentniseCircleNumber:0,
+                   flag:true,
+                   explain:true
+                },
+                methods:{
+                    strPad(number){
+                        let str = number.toString();
+                        if(str.length == 1){
+                            str = '0' + str;
+                        }
+                        return str;
+                    },
+                    start(){
+                        this.seconds = 0;
+                        this.count = 0;
+                        if(this.timer != null){
+                            clearInterval(this.timer);
+                        }
+                        this.timer = setInterval(() => {
+                            this.setRandomCircleNumber();
+                            this.seconds ++;
+                            
+                        },1000);
+                        
+                        this.setRandomCircleNumber();
+                        if(this.count == 3){
+                            this.setRandomniseCircleNumber();
+
+                            }
+                        this.explain = false;                   
+                    },
+                    setRandomCircleNumber(){
+                        this.currentCircleNumber = Math.floor((Math.random()*25)+1);
+                    },
+                    setRandomniseCircleNumber(){
+                        this.currentniseCircleNumber != this.currentCircleNumber;
+                    },
+                    buttonClass(number){
+                        let classNames = ['circle-button'];
+                        if(number == this.currentCircleNumber){
+                            classNames.push('current-button');
+                        }
+                        return classNames;
+                    },
+                    nisebuttonClass(number){
+                        let classNames = ['circle-button'];
+                        if(number == this.currentniseCircleNumber){
+                            classNames.push('nise-current-button');
+                        }
+                        return classNames;
+                    },
+                    answer(number){
+                        if(number == this.currentCircleNumber){
+                            this.count ++;
+                            if(this.count == 10){
+                                clearInterval(this.timer);
+                                this.flag = false;
+                            }
+                            this.setRandomCircleNumber();
+                            this.setRandomniseCircleNumber();
+                        }else{
+                            this.seconds += 10;
+                        }
+                    }
+                },
+                computed:{
+                    secondsInHMS(){
+                        const hours = Math.floor(this.seconds / 3600);
+                        const minutes = Math.floor(this.seconds % 3600 / 60);
+                        const seconds = Math.floor(this.seconds % 3600 % 60);
+                        return this.strPad(hours) + ':' + this.strPad(minutes) + ':' + this.strPad(seconds);
+                    }
+                }
+               
+            })
+        </script>
+        <style>
+            body {
+                padding: 15px;
+            }
+            #app{
+                width: 600px;
+                margin:200px auto;
+            }
+            .circle-button {
+                margin: 10px;
+                text-align: center;
+                vertical-align: middle;
+                height: 75px;
+                width: 75px;
+                border-radius: 50%;
+                color: #999999;
+                border: 4px solid #CCCCCC;
+                background: #fff;
+                outline: none !important;
+            }
+            .current-button {
+                color: #f44336;
+                border: 4px solid #f44336;
+            }
+            .nise-current-button{
+                color:blue;
+                border:4px solid blue;
+            }
+        </style>
+    </body>
+</html>
