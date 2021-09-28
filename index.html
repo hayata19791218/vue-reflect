@@ -8,21 +8,16 @@
         <title>Vueで作った反射神経ゲーム</title>
     </head>
     <body>
-        
     <div id="app">   
         <div v-if="flag">
             <p v-if="explain">反射神経ゲームです<br>スタートボタンを押すとゲームが始まります。<br>赤のマル以外のマルをクリックすると10秒タイムが加算されます。<br>正しいマルを10回押したらゲーム終了です。</p>
+            <p>正解数:{{count}}</p>
             <span v-for="buttonNumber in 25">
                 <button 
-                    :class="
-                        buttonClass(buttonNumber)
-                    "
-                    :class="
-     
-                        nisebuttonClass(buttonNumber)
-                    "
+                    :class="[buttonClass(buttonNumber),nisebuttonClass(buttonNumber)]"
                     @click="answer(buttonNumber)"
                 ></button>
+
                 <br v-if="buttonNumber % 5 == 0">
             </span>
             <h4>{{secondsInHMS}} 秒</h4>
@@ -30,6 +25,7 @@
                 class="btn btn-lg btn-dark"
                 @click="start()"
             >スタート</button>
+            {{currentniseCircleNumber}}
         </div>
         <div v-else>
             終了です！タイムは{{secondsInHMS}}でした！
@@ -65,21 +61,18 @@
                         this.timer = setInterval(() => {
                             this.setRandomCircleNumber();
                             this.seconds ++;
-                            
-                        },1000);
-                        
-                        this.setRandomCircleNumber();
-                        if(this.count == 3){
-                            this.setRandomniseCircleNumber();
-
+                            if(this.count % 3 == 1){
+                                this.setRandomniseCircleNumber();
                             }
+                        },1000);
+                        this.setRandomCircleNumber();
                         this.explain = false;                   
                     },
                     setRandomCircleNumber(){
                         this.currentCircleNumber = Math.floor((Math.random()*25)+1);
                     },
                     setRandomniseCircleNumber(){
-                        this.currentniseCircleNumber != this.currentCircleNumber;
+                        this.currentniseCircleNumber = Math.floor((Math.random()*25)+1);
                     },
                     buttonClass(number){
                         let classNames = ['circle-button'];
@@ -103,7 +96,10 @@
                                 this.flag = false;
                             }
                             this.setRandomCircleNumber();
-                            this.setRandomniseCircleNumber();
+                            
+                            if(this.count % 3 == 0){
+                                this.setRandomniseCircleNumber();
+                            }
                         }else{
                             this.seconds += 10;
                         }
@@ -117,7 +113,6 @@
                         return this.strPad(hours) + ':' + this.strPad(minutes) + ':' + this.strPad(seconds);
                     }
                 }
-               
             })
         </script>
         <style>
